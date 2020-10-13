@@ -1,6 +1,6 @@
 %option noyywrap
 %{
-/*****************声明和选项设置  begin*****************/
+/*****************������ѡ������  begin*****************/
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,20 +10,23 @@ int lines;
 int pos_start;
 int pos_end;
 
-/*****************声明和选项设置  end*****************/
+/*****************������ѡ������  end*****************/
 
 %}
-letter [a-zA-Z]
-id {letter}({letter}|{digit})*
+Letter [a-zA-Z] 
+id {Letter}+
 digit [0-9]
 integer {digit}+
+
+
+
 
 %%
 
  /******************TODO*********************/
- /****请在此补全所有flex的模式与动作  start******/
+ /****���ڴ˲�ȫ����flex��ģʽ�붯��  start******/
  //STUDENT TO DO
- "/*"([^\*]|(\*)*[^\*/])*(\*)*"*/" {return COMMENT;}
+"/*"([^\*]|(\*)*[^\*/])*(\*)*"*/" {return COMMENT;}
  \+ {return ADD;}
  \- {return SUB;}
  \* {return MUL;}
@@ -50,9 +53,9 @@ integer {digit}+
  return {return RETURN;}
  void {return VOID;}
  while {return WHILE;}
-{letter}+ {return IDENTIFIER;}
+{Letter}+ {return IDENTIFIER;}
 {digit}+ {return INTEGER;}
-{digit}+(\.({digit}+)?(E[+\-]?{digit}+)? {return FLOATPOINT;}
+({digit}+\.)|({digit}*\.{digit}+) {return FLOATPOINT;}
  \[\] {return ARRAY;}
  \n {return EOL;}
  [\x20\t\r\v\f] {return BLANK;}
@@ -62,14 +65,14 @@ integer {digit}+
 
 
 
- /****请在此补全所有flex的模式与动作  end******/
+ /****���ڴ˲�ȫ����flex��ģʽ�붯��  end******/
 %%
- /****************C代码 start*************/
+ /****************C���� start*************/
 
 /// \brief analysize a *.cminus file
 ///
-/// \param input_file, 需要分析的文件路径
-/// \param token stream, Token_Node结构体数组，用于存储分析结果，具体定义参考lexical_analyer.h
+/// \param input_file, ��Ҫ�������ļ�·��
+/// \param token stream, Token_Node�ṹ�����飬���ڴ洢������������嶨��ο�lexical_analyer.h
 
 void analyzer(char* input_file, Token_Node* token_stream){
     lines = 1;
@@ -87,32 +90,30 @@ void analyzer(char* input_file, Token_Node* token_stream){
     while(token = yylex()){
         switch(token){
             case COMMENT:
-				//STUDENT TO DO
-				{
-					for (int i = 0;i < strlen(yytext);i++)
-					if(yytext[i] == '\n') {
-						lines++;
-						pos_start = pos_end = 0;
-					}else{
-						pos_end++;
-					}
-				}
+                //STUDENT TO DO
+                for (int i = 0;i < strlen(yytext);i++)
+            	if(yytext[i] == '\n') {
+                lines++;
+            		pos_start = pos_end = 0;
+            	}else{
+            		pos_end++;
+            	}
             case BLANK:
-				//STUDENT TO DO
+                //STUDENT TO DO
                 pos_start++;
                 pos_end++;
                 break;
             case EOL:
                 //STUDENT TO DO
-				lines++;
+                lines++;
                 pos_start = 1;
                 pos_end = 1;
                 break;
             case ERROR:
                 printf("[ERR]: unable to analysize %s at %d line, from %d to %d\n", yytext, lines, pos_start, pos_end);
             default :
-				pos_start = pos_end;
-				pos_end += strlen(yytext);
+            	pos_start = pos_end;
+            	pos_end += strlen(yytext);
                 if (token == ERROR){
                     sprintf(token_stream[index].text, "[ERR]: unable to analysize %s at %d line, from %d to %d", yytext, lines, pos_start, pos_end);
                 } else {
@@ -135,4 +136,4 @@ void analyzer(char* input_file, Token_Node* token_stream){
 
 
 
-/****************C代码 end*************/
+/****************C���� end*************/
